@@ -1,18 +1,32 @@
 package jru.module1.crypto.caesar;
 
+import jru.module1.crypto.caesar.exception.FileManagerException;
+
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.List;
 
 public class FileManager {
-    public static String readFile(String filePath) throws IOException {
-        Path path = Paths.get(filePath);
-        byte[] bytes = Files.readAllBytes(path);
-        return new String(bytes, StandardCharsets.UTF_8);
+
+    public List<String> readFile (String fileName) throws FileManagerException {
+        try {
+            Path path = Path.of(fileName);
+            return Files.readAllLines(path);
+        } catch (IOException | InvalidPathException ex) {
+            throw new FileManagerException(ex.getMessage(), ex);
+        }
     }
-    public void writeFile(String content, String filePath) {
-        // Логика записи файла
+
+    public BufferedWriter openWriter(String fileName) {
+        try {
+            Path path = Path.of(fileName);
+            return Files.newBufferedWriter(path, StandardCharsets.UTF_8);
+        } catch (IOException | InvalidPathException ex) {
+            throw new FileManagerException(ex.getMessage(), ex);
+        }
     }
 }
